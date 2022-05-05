@@ -1,6 +1,6 @@
 package com.example.registry.service.impl;
 
-import com.example.registry.domain.UserData;
+import com.example.registry.model.UserData;
 import com.example.registry.service.UserDataService;
 import org.springframework.stereotype.Service;
 
