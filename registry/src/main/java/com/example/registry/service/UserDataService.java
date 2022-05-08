@@ -1,7 +1,8 @@
 package com.example.registry.service;
 
-import com.example.registry.dto.UserDataRequest;
+import com.example.registry.model.UserData;
 
 public interface UserDataService {
-    UserDataRequest create(UserDataRequest userData);
+    UserData create(UserData userData);
+    void flush();
 }

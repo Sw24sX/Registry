@@ -1,7 +1,7 @@
 package com.example.registry.controller;
 
 import com.example.registry.dto.UserDataRequest;
-import com.example.registry.service.UserDataService;
+import com.example.registry.service.RegistryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("registry")
 public class RegistryController {
-    private final UserDataService userDataService;
+    private final RegistryService registryService;
 
-    public RegistryController(UserDataService userDataService) {
-        this.userDataService = userDataService;
+    public RegistryController(RegistryService registryService) {
+        this.registryService = registryService;
     }
 
     @PostMapping
     public UserDataRequest registry(@RequestBody UserDataRequest userData) throws JsonProcessingException {
-        return userDataService.create(userData);
+        return registryService.registry(userData);
     }
 }

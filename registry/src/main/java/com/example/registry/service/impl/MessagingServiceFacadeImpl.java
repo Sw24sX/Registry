@@ -3,8 +3,9 @@ package com.example.registry.service.impl;
 import com.example.registry.service.MessagingService;
 import com.example.registry.service.MessagingServiceFacade;
 import com.example.registry.service.persistance.Routing;
-import com.example.registry.service.persistance.message.Message;
 import com.example.registry.service.persistance.exception.RegistryException;
+import com.example.registry.service.persistance.message.Message;
+import com.example.registry.service.persistance.message.UserDataMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +29,10 @@ public class MessagingServiceFacadeImpl implements MessagingServiceFacade {
         } catch (TimeoutException e) {
             throw new RegistryException(e.getMessage());
         }
+    }
+
+    @Override
+    public Boolean requestToStub(UserDataMessage message) {
+        return doRequest(message, Routing.REGISTRY, Boolean.class);
     }
 }
