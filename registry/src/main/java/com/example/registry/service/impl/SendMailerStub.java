@@ -1,8 +1,8 @@
 package com.example.registry.service.impl;
 
 import com.example.registry.service.SendMailer;
-import com.example.registry.service.persistance.EmailAddress;
-import com.example.registry.service.persistance.EmailContent;
+import com.example.registry.service.persistance.dto.EmailAddress;
+import com.example.registry.service.persistance.dto.EmailContent;
 import lombok.SneakyThrows;
 
 import java.util.Random;

@@ -1,7 +1,7 @@
 package com.example.registry.service;
 
-import com.example.registry.service.persistance.Message;
-import com.example.registry.service.persistance.MessageId;
+import com.example.registry.service.persistance.message.Message;
+import com.example.registry.service.persistance.message.MessageReceiver;
 
 import java.util.concurrent.TimeoutException;
 
@@ -16,17 +16,17 @@ public interface MessagingService {
      *
      * @return идентификатор отправленного сообщения (correlationId)
      */
-    <T> MessageId send(Message<T> msg);
+    <T> MessageReceiver send(Message<T> msg);
 
     /**
      * Встает на ожидание ответа по сообщению с messageId.
      *
      * Редко, но может кинуть исключение по таймауту.
      *
-     * @param messageId идентификатор сообщения, на которое ждем ответ.
+     * @param messageReceiver идентификатор сообщения, на которое ждем ответ.
      * @return Тело ответа.
      */
-    <T> Message<T> receive(MessageId messageId) throws TimeoutException;
+    <T> Message<T> receive(MessageReceiver messageReceiver) throws TimeoutException;
 
     /**
      * Отправляем сообщение и ждем на него ответ.

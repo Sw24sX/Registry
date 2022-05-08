@@ -1,7 +1,7 @@
 package com.example.registry.service;
 
-import com.example.registry.service.persistance.EmailAddress;
-import com.example.registry.service.persistance.EmailContent;
+import com.example.registry.service.persistance.dto.EmailAddress;
+import com.example.registry.service.persistance.dto.EmailContent;
 
 import java.util.concurrent.TimeoutException;
 

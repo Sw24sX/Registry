@@ -3,10 +3,11 @@ package com.example.registry.dto;
 import lombok.Data;
 
 @Data
-public class UserDataDto {
-    private Long id;
+public class UserDataRequest {
+    private String id;
     private String name;
     private String login;
     private String password;
     private String email;
+    private boolean isApproval;
 }
