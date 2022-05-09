@@ -25,43 +25,50 @@ public class StubService {
     private final ObjectMapper mapper;
     private final Connection connection;
 
-    public StubService(ConnectionFactory connectionFactory, ObjectMapper mapper) throws JMSException {
-
-        this.mapper = mapper;
+    public StubService(ConnectionFactory connectionFactory) throws JMSException {
+        this.mapper = new ObjectMapper();
         connection = connectionFactory.createConnection();
         connection.start();
     }
 
     @JmsListener(destination = "add-user-queue")
     public void registryConsumer(Message message) throws JsonProcessingException, JMSException {
-        Session session = null;
-        try {
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String userAsString = message.getStringProperty("userObject");
-            UserData user = mapper.readValue(userAsString, UserData.class);
-            user.setName("Not" + user.getName());
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            String replyPayload = mapper.writeValueAsString(user);
+        String userAsString = message.getStringProperty("userObject");
+//        UserObject user = mapper.readValue(userAsString, UserObject.class);
+//        user.setName("Not" + user.getName());
 
-            TextMessage replyMessage = session.createTextMessage(replyPayload);
-            replyMessage.setJMSDestination(message.getJMSReplyTo());
-            replyMessage.setJMSCorrelationID(message.getJMSCorrelationID());
+        String replyPayload = mapper.writeValueAsString(true);
 
-            MessageProducer producer = session.createProducer(message.getJMSReplyTo());
-            producer.send(replyMessage);
+        TextMessage replyMessage = session.createTextMessage(replyPayload);
+        replyMessage.setJMSDestination(message.getJMSReplyTo());
+        replyMessage.setJMSCorrelationID(message.getJMSCorrelationID());
 
-            sleep();
-            user.setApproval(isApproval(user));
-        } catch (JMSException e) {
-            e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        MessageProducer producer = session.createProducer(message.getJMSReplyTo());
+        producer.send(replyMessage);
+
+        session.close();
+
+//        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//        String userAsString = message.getStringProperty("userData");
+//        UserData user = mapper.readValue(userAsString, UserData.class);
+//        user.setApproval(isApproval(user));
+//        String replyPayload = mapper.writeValueAsString(user.isApproval());
+//
+//        TextMessage replyMessage = session.createTextMessage(replyPayload);
+//        replyMessage.setJMSDestination(message.getJMSReplyTo());
+//        replyMessage.setJMSCorrelationID(message.getJMSCorrelationID());
+//
+//        MessageProducer producer = session.createProducer(message.getJMSReplyTo());
+//        producer.send(replyMessage);
+//
+//        producer.close();
+//        session.close();
     }
 
     private boolean isApproval(UserData userData) {
+        sleep();
         return !INCORRECT_EMAILS.contains(userData.getEmail());
     }
 

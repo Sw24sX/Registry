@@ -1,32 +1,42 @@
 package com.example.registry.config;
 
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
+
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 
 @Configuration
 public class RegistryConfig {
-    private static final long RECEIVE_TIMEOUT = 50000;
+    @Value("${activemq.broker-url}")
+    private String brokerUrl;
+
+    @Value("${activemq.user}")
+    private String username;
+
+    @Value("${activemq.password}")
+    private String password;
 
     @Bean
-    public DirectExchange directExchange() {
-        return new DirectExchange("stub.service");
+    public Destination addDestination() {
+        return new ActiveMQQueue("add-user-queue");
     }
 
     @Bean
-    public MessageConverter jackson2MessageConverter() {
-        return new Jackson2JsonMessageConverter();
+    public ConnectionFactory connectionFactory() {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
+        factory.setBrokerURL(brokerUrl);
+        factory.setUserName(username);
+        factory.setPassword(password);
+        return factory;
     }
 
     @Bean
-    public AsyncRabbitTemplate asyncRabbitTemplate(RabbitTemplate rabbitTemplate){
-        AsyncRabbitTemplate asyncRabbitTemplate = new AsyncRabbitTemplate(rabbitTemplate);
-        asyncRabbitTemplate.setReceiveTimeout(RECEIVE_TIMEOUT);
-        return asyncRabbitTemplate;
+    public JmsTemplate jmsTemplate(){
+        return new JmsTemplate(connectionFactory());
     }
-
 }

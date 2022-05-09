@@ -1,8 +1,9 @@
-package com.example.registry.service;
+package com.example.registry.service.persistance.message;
 
-import com.example.registry.service.persistance.message.Message;
-import com.example.registry.service.persistance.message.MessageReceiver;
+import com.example.registry.service.persistance.message.dto.Message;
+import com.example.registry.service.persistance.message.dto.MessageId;
 
+import javax.jms.JMSException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -16,17 +17,17 @@ public interface MessagingService {
      *
      * @return идентификатор отправленного сообщения (correlationId)
      */
-    <T> MessageReceiver send(Message<T> msg);
+    <T> MessageId send(Message<T> msg) throws JMSException;
 
     /**
      * Встает на ожидание ответа по сообщению с messageId.
      *
      * Редко, но может кинуть исключение по таймауту.
      *
-     * @param messageReceiver идентификатор сообщения, на которое ждем ответ.
+     * @param messageId идентификатор сообщения, на которое ждем ответ.
      * @return Тело ответа.
      */
-    <T> Message<T> receive(MessageReceiver messageReceiver) throws TimeoutException;
+    <T> Message<T> receive(MessageId messageId) throws TimeoutException, JMSException;
 
     /**
      * Отправляем сообщение и ждем на него ответ.
@@ -34,5 +35,5 @@ public interface MessagingService {
      * @param request тело запроса.
      * @return тело ответа.
      */
-    <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException;
+    <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException, JMSException;
 }

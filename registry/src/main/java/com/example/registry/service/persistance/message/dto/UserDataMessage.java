@@ -1,4 +1,4 @@
-package com.example.registry.service.persistance.message;
+package com.example.registry.service.persistance.message.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
