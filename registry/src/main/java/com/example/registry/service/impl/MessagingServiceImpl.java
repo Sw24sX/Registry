@@ -15,6 +15,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
@@ -68,8 +69,7 @@ public class MessagingServiceImpl implements MessagingService {
 
     @SneakyThrows
     private static void sleep() {
-        //todo
-//        Thread.sleep(TimeUnit.MINUTES.toMillis(1));
+        Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 
 

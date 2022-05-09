@@ -5,8 +5,7 @@ import com.example.registry.model.UserData;
 import java.util.regex.Pattern;
 
 public class UserDataValidator {
-    private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-            + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+    private static final String EMAIL_REGEX = "^(.+)@(\\S+)$";
     private static final String LOGIN_REGEX = "[A-Za-z0-9_-]+";
 
     private UserDataValidator() {
@@ -29,8 +28,8 @@ public class UserDataValidator {
     }
 
     private static boolean patternMatches(String value, String pattern) {
-        return Pattern.compile(value)
-                .matcher(pattern)
+        return Pattern.compile(pattern)
+                .matcher(value)
                 .matches();
     }
 }
