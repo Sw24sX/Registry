@@ -1,36 +1,49 @@
 package com.example.stubservice.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.core.JmsTemplate;
+
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 
 @Configuration
+@EnableJms
 public class StubServiceConfig {
-    private static final String ROUTING_KEY = "registry";
+    @Value("${activemq.broker-url}")
+    private String brokerUrl;
+
+    @Value("${activemq.user}")
+    private String username;
+
+    @Value("${activemq.password}")
+    private String password;
 
     @Bean
-    public DirectExchange directExchange() {
-        return new DirectExchange("stub.service");
+    public Destination addDestination() {
+        return new ActiveMQQueue("add-user-queue");
     }
 
     @Bean
-    public Queue queue() {
-        return new Queue("request");
+    public Destination getRequestDestination() {
+        return new ActiveMQQueue("get-user-queue");
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange directExchange) {
-        return BindingBuilder.bind(queue)
-                .to(directExchange)
-                .with(ROUTING_KEY);
+    public ConnectionFactory connectionFactory() {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
+        factory.setBrokerURL(brokerUrl);
+        factory.setUserName(username);
+        factory.setPassword(password);
+        return factory;
     }
 
-    @Bean
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+//    @Bean
+//    public JmsTemplate jmsTemplate(){
+//        return new JmsTemplate(connectionFactory());
+//    }
 }
