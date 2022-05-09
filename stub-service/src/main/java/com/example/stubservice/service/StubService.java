@@ -2,6 +2,8 @@ package com.example.stubservice.service;
 
 import com.example.stubservice.dto.UserData;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class StubService {
+    private static final Logger log = LoggerFactory.getLogger(StubService.class);
     private static final Set<String> INCORRECT_EMAILS = new HashSet<>(Arrays.asList("string", "test@test.ru"));
 
     @RabbitListener(queues = "#{queue.name}")
@@ -29,9 +32,7 @@ public class StubService {
     @SneakyThrows
     private static void sleep() {
         int secondsSleep = new Random().nextInt(10);
-        String message = String.format("Sleep by %s", secondsSleep);
-        System.out.println(message);
+        log.info("Sleep by {}", secondsSleep);
         Thread.sleep(TimeUnit.SECONDS.toMillis(secondsSleep));
-//        Thread.sleep(TimeUnit.SECONDS.toMillis(60));
     }
 }

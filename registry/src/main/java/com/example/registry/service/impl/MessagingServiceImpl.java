@@ -5,6 +5,8 @@ import com.example.registry.service.persistance.message.Message;
 import com.example.registry.service.persistance.message.MessageReceiver;
 import com.example.registry.service.persistance.exception.RegistryException;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpReplyTimeoutException;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
@@ -20,6 +22,8 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class MessagingServiceImpl implements MessagingService {
+    private static final Logger log = LoggerFactory.getLogger(MessagingServiceImpl.class);
+
     private final AsyncRabbitTemplate asyncRabbitTemplate;
     private final DirectExchange directExchange;
 
@@ -30,6 +34,7 @@ public class MessagingServiceImpl implements MessagingService {
 
     @Override
     public <T> MessageReceiver send(Message<T> msg) {
+        //TODO
         ListenableFuture<Object> listenableFuture =
                 asyncRabbitTemplate.convertSendAndReceiveAsType(
                         directExchange.getName(),
@@ -38,6 +43,7 @@ public class MessagingServiceImpl implements MessagingService {
                         new ParameterizedTypeReference<>() {
                         });
 
+        log.info("Message was send");
         UUID correlationId = UUID.randomUUID();
         return new MessageReceiver(correlationId.toString(), msg.getRouting(), listenableFuture);
     }
@@ -50,6 +56,7 @@ public class MessagingServiceImpl implements MessagingService {
 
         try {
             Object response = messageReceiver.getListenableFuture().get();
+            log.info("Message was received");
             return new Message<>((T)response, messageReceiver.getRoutingKey());
         } catch (InterruptedException | ExecutionException e) {
             if (e.getCause() instanceof AmqpReplyTimeoutException) {

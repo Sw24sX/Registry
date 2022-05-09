@@ -5,13 +5,13 @@ import com.example.registry.service.persistance.dto.EmailAddress;
 import com.example.registry.service.persistance.dto.EmailContent;
 import com.example.registry.service.persistance.exception.RegistryException;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -21,6 +21,8 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class SendMailerImpl implements SendMailer {
+    private static final Logger log = LoggerFactory.getLogger(SendMailerImpl.class);
+
     private final TemplateEngine templateEngine;
     private final JavaMailSender mailSender;
 
@@ -41,11 +43,11 @@ public class SendMailerImpl implements SendMailer {
             sleep();
         }
 
+        String content = build(messageBody);
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setSubject("Registry mail");
             messageHelper.setTo(toAddress.getRecipientAddress());
-            String content = build(messageBody);
             messageHelper.setText(content, true);
         };
 
@@ -54,7 +56,8 @@ public class SendMailerImpl implements SendMailer {
         } catch (MailException e) {
             throw new RegistryException(e.getMessage(), e.getCause());
         }
-//        log.info("Message sent to {}, body {}.", toAddress, messageBody);
+
+        log.info("Message sent to {}, body {}.", toAddress.getRecipientAddress(), content);
     }
 
     private String build(EmailContent messageBody) {
@@ -65,6 +68,7 @@ public class SendMailerImpl implements SendMailer {
 
     @SneakyThrows
     private static void sleep() {
+        log.info("Service sleep by 60 sec");
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 
