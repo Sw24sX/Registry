@@ -11,13 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.*;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class CommonMessagingService implements MessagingService {
-    private static final int timout = 1000;
+    private static final int TIMEOUT_RECEIVE = 7000;
     private static final Logger log = LoggerFactory.getLogger(CommonMessagingService.class);
 
     private final JmsTemplate jmsTemplate;
@@ -57,29 +58,24 @@ public abstract class CommonMessagingService implements MessagingService {
 
     @Override
     public <T> Message<T> receive(MessageId messageId) throws TimeoutException, JMSException {
-        // TODO: 09.05.2022
-//        if(shouldThrowTimeout()) {
-//            sleep();
-//
-//            throw new TimeoutException("Timeout!");
-//        }
-//
-//        if (shouldSleep()) {
-//            sleep();
-//        }
-
-        MessageState state = messageStateRepository.getById(messageId.getId());
-
+        if (shouldSleep()) {
+            sleep();
+        }
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        MessageState state = messageStateRepository.getById(messageId.getId());
         Destination replyDestination = session.createQueue(getReplyDestination(state.getQueueName()));
 
-        MessageConsumer consumer = session.createConsumer(replyDestination, "JMSCorrelationID = '" + state.getCorrelationId() + "'");
-        TextMessage reply = (TextMessage)consumer.receive();
-
+        String correlationId = String.format("JMSCorrelationID = '%s'", state.getCorrelationId());
+        MessageConsumer consumer = session.createConsumer(replyDestination, correlationId);
+        TextMessage reply = (TextMessage)consumer.receive(TIMEOUT_RECEIVE);
         consumer.close();
         session.close();
-        return new Message<>(convertResponse(reply.getText()), state.getQueueName(), state.getPropertyBodyName());
+
+        Optional.ofNullable(reply).orElseThrow(() -> new TimeoutException("Timeout!"));
+
+        return new Message<>(convertResponse(reply.getText()), null);
     }
 
     private String getReplyDestination(String requestDestination) {
@@ -103,12 +99,7 @@ public abstract class CommonMessagingService implements MessagingService {
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 
-
     private static boolean shouldSleep() {
-        return new Random().nextInt(10) == 1;
-    }
-
-    private static boolean shouldThrowTimeout() {
         return new Random().nextInt(10) == 1;
     }
 }
