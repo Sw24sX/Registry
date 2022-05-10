@@ -3,7 +3,6 @@ package com.example.registry.message.messaging;
 import com.example.registry.message.dto.Message;
 import com.example.registry.message.dto.MessageId;
 
-import javax.jms.JMSException;
 import java.util.concurrent.TimeoutException;
 
 /**

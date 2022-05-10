@@ -5,18 +5,17 @@ import com.example.registry.controller.dto.UserDataRequest;
 import com.example.registry.mapper.UserDataMapper;
 import com.example.registry.message.dto.Message;
 import com.example.registry.message.messaging.BooleanResponseMessaging;
-import com.example.registry.service.persistance.model.UserData;
 import com.example.registry.service.RegistryService;
 import com.example.registry.service.SendMailer;
 import com.example.registry.service.UserDataService;
 import com.example.registry.service.persistance.exception.RegistryException;
+import com.example.registry.service.persistance.model.UserData;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import javax.jms.JMSException;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;

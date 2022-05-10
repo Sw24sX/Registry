@@ -8,7 +8,6 @@ import com.example.registry.service.persistance.exception.RegistryException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
 import java.util.concurrent.TimeoutException;
 
 @Service
