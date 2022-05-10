@@ -1,9 +1,8 @@
 package com.example.registry.service.persistance.message.impl;
 
 import com.example.registry.model.MessageState;
-import com.example.registry.repository.MessageStateRepository;
+import com.example.registry.service.persistance.repository.MessageStateRepository;
 import com.example.registry.service.persistance.message.MessagingService;
-import com.example.registry.service.persistance.exception.RegistryException;
 import com.example.registry.service.persistance.message.dto.Message;
 import com.example.registry.service.persistance.message.dto.MessageId;
 import lombok.SneakyThrows;

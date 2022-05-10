@@ -1,7 +1,7 @@
 package com.example.registry.service.impl;
 
 import com.example.registry.model.UserData;
-import com.example.registry.repository.UserDataRepository;
+import com.example.registry.service.persistance.repository.UserDataRepository;
 import com.example.registry.service.UserDataService;
 import com.example.registry.service.persistance.exception.EntityAlreadyExist;
 import com.example.registry.service.persistance.exception.InvalidEntityException;
