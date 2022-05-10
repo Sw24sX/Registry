@@ -3,7 +3,7 @@ package com.example.registry;
 import com.example.registry.common.UserDataSet;
 import com.example.registry.model.UserData;
 import com.example.registry.service.persistance.repository.UserDataRepository;
-import com.example.registry.service.persistance.message.MessagingService;
+import com.example.registry.service.persistance.message.messaging.MessagingService;
 import com.example.registry.service.UserDataService;
 import com.example.registry.service.persistance.exception.EntityAlreadyExist;
 import com.example.registry.service.persistance.exception.InvalidEntityException;

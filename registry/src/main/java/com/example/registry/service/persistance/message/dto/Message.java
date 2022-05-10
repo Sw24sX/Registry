@@ -6,7 +6,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Message<T> {
-    private T body;
-    private String queueName;
-    private String propertyBodyName;
+    private final T body;
+    private final String destination;
+    private final String propertyBodyName;
+
+    public Message(T body, String destination) {
+        this.body = body;
+        this.destination = destination;
+        this.propertyBodyName = "value";
+    }
 }

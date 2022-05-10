@@ -9,23 +9,21 @@ import com.example.registry.service.UserDataService;
 import com.example.registry.service.persistance.dto.EmailAddress;
 import com.example.registry.service.persistance.dto.RegistryEmailContent;
 import com.example.registry.service.persistance.exception.RegistryException;
-import com.example.registry.service.persistance.message.dto.Message;
-import com.example.registry.service.persistance.message.impl.BooleanResponseMessaging;
+import com.example.registry.service.persistance.message.StubServiceMessagingService;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
 import java.util.concurrent.TimeoutException;
 
 @Service
 public class RegistryServiceImpl implements RegistryService {
-    private final BooleanResponseMessaging booleanResponseMessaging;
+    private final StubServiceMessagingService stubServiceMessagingService;
     private final UserDataMapper userDataMapper;
     private final SendMailer sendMailer;
     private final UserDataService userDataService;
 
-    public RegistryServiceImpl(BooleanResponseMessaging booleanResponseMessaging, UserDataMapper userDataMapper,
+    public RegistryServiceImpl(StubServiceMessagingService stubServiceMessagingService, UserDataMapper userDataMapper,
                                SendMailer sendMailer, UserDataService userDataService) {
-        this.booleanResponseMessaging = booleanResponseMessaging;
+        this.stubServiceMessagingService = stubServiceMessagingService;
         this.userDataMapper = userDataMapper;
         this.sendMailer = sendMailer;
         this.userDataService = userDataService;
@@ -34,16 +32,8 @@ public class RegistryServiceImpl implements RegistryService {
     @Override
     public UserDataRequest registry(UserDataRequest userDataRequest) {
         UserData userData = userDataService.create(userDataMapper.toUserData(userDataRequest));
-        try {
-            Message<UserData> message = new Message<>(userData, "stub-service", "userData");
-            Message<Boolean> responseMessage = booleanResponseMessaging.doRequest(message);
-            userData.setApproval(responseMessage.getBody());
-            userDataService.flush();
-        } catch (TimeoutException | JMSException e) {
-            // TODO: 09.05.2022 add constructor with exception
-            throw new RegistryException(e.getMessage(), e.getCause());
-        }
-
+        userData.setApproval(stubServiceMessagingService.registryUser(userDataMapper.toMessage(userData)));
+        userDataService.flush();
         userData.setApproval(userData.isApproval());
         sendMail(userData);
         return userDataMapper.toRequest(userData);

@@ -1,4 +1,4 @@
-package com.example.registry.service.persistance.message;
+package com.example.registry.service.persistance.message.messaging;
 
 import com.example.registry.service.persistance.message.dto.Message;
 import com.example.registry.service.persistance.message.dto.MessageId;

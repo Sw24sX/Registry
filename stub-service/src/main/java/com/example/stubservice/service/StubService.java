@@ -35,7 +35,7 @@ public class StubService {
     public void registryConsumer(Message message) throws JsonProcessingException, JMSException {
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        String userAsString = message.getStringProperty("userData");
+        String userAsString = message.getStringProperty("value");
         UserData user = mapper.readValue(userAsString, UserData.class);
         String replyPayload = mapper.writeValueAsString(isApproval(user));
 

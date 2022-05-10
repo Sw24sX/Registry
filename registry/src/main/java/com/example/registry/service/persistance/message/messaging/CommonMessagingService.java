@@ -1,8 +1,7 @@
-package com.example.registry.service.persistance.message.impl;
+package com.example.registry.service.persistance.message.messaging;
 
 import com.example.registry.model.MessageState;
 import com.example.registry.service.persistance.repository.MessageStateRepository;
-import com.example.registry.service.persistance.message.MessagingService;
 import com.example.registry.service.persistance.message.dto.Message;
 import com.example.registry.service.persistance.message.dto.MessageId;
 import lombok.SneakyThrows;
@@ -37,9 +36,9 @@ public abstract class CommonMessagingService implements MessagingService {
     @Override
     public <T> MessageId send(Message<T> msg) throws JMSException {
         String messageBody = convertRequest(msg.getBody());
-        Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        Destination replyDestination = session.createQueue(getReplyDestination(msg.getQueueName()));
+        Destination replyDestination = session.createQueue(getReplyDestination(msg.getDestination()));
 
         TextMessage message = session.createTextMessage();
         message.setStringProperty(msg.getPropertyBodyName(), messageBody);
@@ -47,11 +46,11 @@ public abstract class CommonMessagingService implements MessagingService {
         String correlationId = UUID.randomUUID().toString();
         message.setJMSCorrelationID(correlationId);
 
-        Destination destination = new ActiveMQQueue(msg.getQueueName());
+        Destination destination = new ActiveMQQueue(msg.getDestination());
         jmsTemplate.convertAndSend(destination, message);
 
         session.close();
-        MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getQueueName(),
+        MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getDestination(),
         msg.getPropertyBodyName()));
         return new MessageId(messageState.getId());
     }
