@@ -2,7 +2,7 @@ package com.example.registry.mapper;
 
 import com.example.registry.dto.UserDataRequest;
 import com.example.registry.model.UserData;
-import com.example.registry.service.persistance.message.dto.UserDataMessage;
+import com.example.registry.message.dto.UserDataMessage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,4 +1,4 @@
-package com.example.registry.service.persistance.message.messaging;
+package com.example.registry.message.messaging;
 
 import com.example.registry.service.persistance.repository.MessageStateRepository;
 import com.example.registry.service.persistance.exception.RegistryException;

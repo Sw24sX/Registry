@@ -1,9 +1,9 @@
-package com.example.registry.service.persistance.message.messaging;
+package com.example.registry.message.messaging;
 
 import com.example.registry.model.MessageState;
 import com.example.registry.service.persistance.repository.MessageStateRepository;
-import com.example.registry.service.persistance.message.dto.Message;
-import com.example.registry.service.persistance.message.dto.MessageId;
+import com.example.registry.message.dto.Message;
+import com.example.registry.message.dto.MessageId;
 import lombok.SneakyThrows;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;

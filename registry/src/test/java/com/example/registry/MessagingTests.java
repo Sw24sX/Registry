@@ -4,7 +4,7 @@ import com.example.registry.common.UserDataSet;
 import com.example.registry.dto.UserDataRequest;
 import com.example.registry.mapper.UserDataMapper;
 import com.example.registry.model.UserData;
-import com.example.registry.service.persistance.message.messaging.MessagingService;
+import com.example.registry.message.messaging.MessagingService;
 import com.example.registry.service.RegistryService;
 import com.example.registry.service.SendMailer;
 import com.example.registry.service.UserDataService;

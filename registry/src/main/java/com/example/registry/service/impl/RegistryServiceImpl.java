@@ -9,7 +9,7 @@ import com.example.registry.service.UserDataService;
 import com.example.registry.service.persistance.dto.EmailAddress;
 import com.example.registry.service.persistance.dto.RegistryEmailContent;
 import com.example.registry.service.persistance.exception.RegistryException;
-import com.example.registry.service.persistance.message.StubServiceMessagingService;
+import com.example.registry.message.StubServiceMessagingService;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeoutException;

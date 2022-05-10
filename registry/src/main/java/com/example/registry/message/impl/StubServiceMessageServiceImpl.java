@@ -1,10 +1,10 @@
-package com.example.registry.service.persistance.message.impl;
+package com.example.registry.message.impl;
 
+import com.example.registry.message.StubServiceMessagingService;
+import com.example.registry.message.dto.Message;
+import com.example.registry.message.dto.UserDataMessage;
+import com.example.registry.message.messaging.MessagingService;
 import com.example.registry.service.persistance.exception.RegistryException;
-import com.example.registry.service.persistance.message.StubServiceMessagingService;
-import com.example.registry.service.persistance.message.dto.Message;
-import com.example.registry.service.persistance.message.dto.UserDataMessage;
-import com.example.registry.service.persistance.message.messaging.MessagingService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
