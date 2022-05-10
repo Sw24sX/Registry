@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
  * Реализует подключение, отправку и ожидание сообщения.
  */
 public abstract class BaseMessagingService implements MessagingService {
-    private static final int TIMEOUT_RECEIVE = 7000;
+    private static final int TIMEOUT_RECEIVE = 8000;
     private static final Logger log = LoggerFactory.getLogger(BaseMessagingService.class);
 
     private final JmsTemplate jmsTemplate;
