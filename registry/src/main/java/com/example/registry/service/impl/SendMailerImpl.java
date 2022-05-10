@@ -34,6 +34,7 @@ public class SendMailerImpl implements SendMailer {
     @Override
     public void sendMail(EmailAddress toAddress, EmailContent messageBody) throws TimeoutException {
         if(shouldThrowTimeout()) {
+            log.info("Mal service throw timeout");
             sleep();
 
             throw new TimeoutException("Timeout!");
@@ -68,7 +69,7 @@ public class SendMailerImpl implements SendMailer {
 
     @SneakyThrows
     private static void sleep() {
-        log.info("Service sleep by 60 sec");
+        log.info("Mail service sleep by 60 sec");
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 

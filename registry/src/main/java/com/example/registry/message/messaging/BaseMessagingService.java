@@ -1,5 +1,6 @@
 package com.example.registry.message.messaging;
 
+import com.example.registry.service.persistance.exception.RegistryException;
 import com.example.registry.service.persistance.model.MessageState;
 import com.example.registry.service.persistance.repository.MessageStateRepository;
 import com.example.registry.message.dto.Message;
@@ -38,55 +39,77 @@ public abstract class BaseMessagingService implements MessagingService {
     }
 
     @Override
-    public <T> MessageId send(Message<T> msg) throws JMSException {
+    public <T> MessageId send(Message<T> msg) {
         String messageBody = convertRequest(msg.getBody());
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = null;
+        try{
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination replyDestination = session.createQueue(getReplyDestination(msg.getDestination()));
 
-        Destination replyDestination = session.createQueue(getReplyDestination(msg.getDestination()));
+            TextMessage message = session.createTextMessage();
+            message.setStringProperty(msg.getPropertyBodyName(), messageBody);
+            message.setJMSReplyTo(replyDestination);
+            String correlationId = UUID.randomUUID().toString();
+            message.setJMSCorrelationID(correlationId);
 
-        TextMessage message = session.createTextMessage();
-        message.setStringProperty(msg.getPropertyBodyName(), messageBody);
-        message.setJMSReplyTo(replyDestination);
-        String correlationId = UUID.randomUUID().toString();
-        message.setJMSCorrelationID(correlationId);
-
-        Destination destination = new ActiveMQQueue(msg.getDestination());
-        jmsTemplate.convertAndSend(destination, message);
-
-        session.close();
-        MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getDestination(),
-        msg.getPropertyBodyName()));
-        return new MessageId(messageState.getId());
+            Destination destination = new ActiveMQQueue(msg.getDestination());
+            jmsTemplate.convertAndSend(destination, message);
+            MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getDestination(),
+                    msg.getPropertyBodyName()));
+            return new MessageId(messageState.getId());
+        } catch (JMSException e) {
+            throw new RegistryException(e);
+        } finally {
+            close(session, null);
+        }
     }
 
     @Override
-    public <T> Message<T> receive(MessageId messageId) throws TimeoutException, JMSException {
+    public <T> Message<T> receive(MessageId messageId) throws TimeoutException {
         if (shouldSleep()) {
             sleep();
         }
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = null;
+        MessageConsumer consumer = null;
+        try {
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        MessageState state = messageStateRepository.getById(messageId.getId());
-        Destination replyDestination = session.createQueue(getReplyDestination(state.getQueueName()));
+            MessageState state = messageStateRepository.getById(messageId.getId());
+            Destination replyDestination = session.createQueue(getReplyDestination(state.getQueueName()));
 
-        String correlationId = String.format("JMSCorrelationID = '%s'", state.getCorrelationId());
-        MessageConsumer consumer = session.createConsumer(replyDestination, correlationId);
-        TextMessage reply = (TextMessage)consumer.receive(TIMEOUT_RECEIVE);
-        consumer.close();
-        session.close();
+            String correlationId = String.format("JMSCorrelationID = '%s'", state.getCorrelationId());
+            consumer = session.createConsumer(replyDestination, correlationId);
+            TextMessage reply = (TextMessage)consumer.receive(TIMEOUT_RECEIVE);
+            Optional.ofNullable(reply).orElseThrow(() -> new TimeoutException("Timeout!"));
 
-        Optional.ofNullable(reply).orElseThrow(() -> new TimeoutException("Timeout!"));
-
-        return new Message<>(convertResponse(reply.getText()), null);
+            return new Message<>(convertResponse(reply.getText()), null);
+        } catch (JMSException e) {
+            throw new RegistryException(e);
+        } finally {
+            close(session, consumer);
+        }
     }
 
     private String getReplyDestination(String requestDestination) {
         return String.format("%s.reply", requestDestination);
     }
 
+    private void close(Session session, MessageConsumer consumer) {
+        try {
+            if (consumer != null) {
+                consumer.close();
+            }
+            if (session != null) {
+                session.close();
+            }
+        } catch (JMSException e) {
+            throw new RegistryException(e);
+        }
+    }
+
     @Override
-    public <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException, JMSException {
+    public <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException {
         final MessageId messageId = send(request);
 
         return receive(messageId);
@@ -98,7 +121,7 @@ public abstract class BaseMessagingService implements MessagingService {
 
     @SneakyThrows
     private static void sleep() {
-        log.info("Service sleep by 60 sec");
+        log.info("Messaging service sleep by 60 sec");
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 

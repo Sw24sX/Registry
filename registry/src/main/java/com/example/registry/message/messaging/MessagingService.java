@@ -17,7 +17,7 @@ public interface MessagingService {
      *
      * @return идентификатор отправленного сообщения (correlationId)
      */
-    <T> MessageId send(Message<T> msg) throws JMSException;
+    <T> MessageId send(Message<T> msg);
 
     /**
      * Встает на ожидание ответа по сообщению с messageId.
@@ -27,7 +27,7 @@ public interface MessagingService {
      * @param messageId идентификатор сообщения, на которое ждем ответ.
      * @return Тело ответа.
      */
-    <T> Message<T> receive(MessageId messageId) throws TimeoutException, JMSException;
+    <T> Message<T> receive(MessageId messageId) throws TimeoutException;
 
     /**
      * Отправляем сообщение и ждем на него ответ.
@@ -35,5 +35,5 @@ public interface MessagingService {
      * @param request тело запроса.
      * @return тело ответа.
      */
-    <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException, JMSException;
+    <R, A> Message<A> doRequest(Message<R> request) throws TimeoutException;
 }

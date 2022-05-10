@@ -40,7 +40,7 @@ public class MessagingTests {
     private UserDataMapper userDataMapper;
 
     @Test
-    public void verifyRegistry_Success() throws TimeoutException, JMSException {
+    public void verifyRegistry_Success() throws TimeoutException {
         UserData userData = UserDataSet.createValid();
         Mockito.when(userDataService.create(any())).thenReturn(userData);
         Mockito.when(messagingService.doRequest(new Message<UserData>(any(), "stub-service"))).
@@ -50,7 +50,7 @@ public class MessagingTests {
     }
 
     @Test
-    public void verifyRegistry_Wrong() throws TimeoutException, JMSException {
+    public void verifyRegistry_Wrong() throws TimeoutException {
         UserData userData = UserDataSet.createValid();
         Mockito.when(userDataService.create(any())).thenReturn(userData);
         Mockito.when(messagingService.doRequest(new Message<UserData>(any(), "stub-service")))
@@ -60,7 +60,7 @@ public class MessagingTests {
     }
 
     @Test
-    public void verifyRegistry_Timeout() throws TimeoutException, JMSException {
+    public void verifyRegistry_Timeout() throws TimeoutException {
         UserData userData = UserDataSet.createValid();
         Mockito.when(userDataService.create(any())).thenReturn(userData);
         Mockito.when(messagingService.doRequest(new Message<UserData>(any(), "stub-service")))
