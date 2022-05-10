@@ -41,9 +41,7 @@ public abstract class BaseMessagingService implements MessagingService {
     @Override
     public <T> MessageId send(Message<T> msg) {
         String messageBody = convertRequest(msg.getBody());
-        Session session = null;
-        try{
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        try(Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
             Destination replyDestination = session.createQueue(getReplyDestination(msg.getDestination()));
 
             TextMessage message = session.createTextMessage();
@@ -59,8 +57,6 @@ public abstract class BaseMessagingService implements MessagingService {
             return new MessageId(messageState.getId());
         } catch (JMSException e) {
             throw new RegistryException(e);
-        } finally {
-            close(session, null);
         }
     }
 
@@ -70,42 +66,24 @@ public abstract class BaseMessagingService implements MessagingService {
             sleep();
         }
 
-        Session session = null;
-        MessageConsumer consumer = null;
-        try {
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
+        try (Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
             MessageState state = messageStateRepository.getById(messageId.getId());
             Destination replyDestination = session.createQueue(getReplyDestination(state.getQueueName()));
 
             String correlationId = String.format("JMSCorrelationID = '%s'", state.getCorrelationId());
-            consumer = session.createConsumer(replyDestination, correlationId);
-            TextMessage reply = (TextMessage)consumer.receive(TIMEOUT_RECEIVE);
-            Optional.ofNullable(reply).orElseThrow(() -> new TimeoutException("Timeout!"));
+            try (MessageConsumer consumer = session.createConsumer(replyDestination, correlationId)) {
+                TextMessage reply = (TextMessage)consumer.receive(TIMEOUT_RECEIVE);
+                Optional.ofNullable(reply).orElseThrow(() -> new TimeoutException("Timeout!"));
 
-            return new Message<>(convertResponse(reply.getText()), null);
+                return new Message<>(convertResponse(reply.getText()), null);
+            }
         } catch (JMSException e) {
             throw new RegistryException(e);
-        } finally {
-            close(session, consumer);
         }
     }
 
     private String getReplyDestination(String requestDestination) {
         return String.format("%s.reply", requestDestination);
-    }
-
-    private void close(Session session, MessageConsumer consumer) {
-        try {
-            if (consumer != null) {
-                consumer.close();
-            }
-            if (session != null) {
-                session.close();
-            }
-        } catch (JMSException e) {
-            throw new RegistryException(e);
-        }
     }
 
     @Override
