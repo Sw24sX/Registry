@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class SendMailerImpl implements SendMailer {
-    private static final Logger log = LoggerFactory.getLogger(SendMailerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SendMailerImpl.class);
 
     private final TemplateEngine templateEngine;
     private final JavaMailSender mailSender;
@@ -34,7 +34,7 @@ public class SendMailerImpl implements SendMailer {
     @Override
     public void sendMail(EmailAddress toAddress, EmailContent messageBody) throws TimeoutException {
         if(shouldThrowTimeout()) {
-            log.info("Mal service throw timeout");
+            LOG.info("Mal service throw timeout");
             sleep();
 
             throw new TimeoutException("Timeout!");
@@ -58,7 +58,7 @@ public class SendMailerImpl implements SendMailer {
             throw new RegistryException(e);
         }
 
-        log.info("Message sent to {}, body {}.", toAddress.getRecipientAddress(), content);
+        LOG.info("Message sent to {}, body {}.", toAddress.getRecipientAddress(), content);
     }
 
     private String build(EmailContent messageBody) {
@@ -69,7 +69,7 @@ public class SendMailerImpl implements SendMailer {
 
     @SneakyThrows
     private static void sleep() {
-        log.info("Mail service sleep by 60 sec");
+        LOG.info("Mail service sleep by 60 sec");
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 

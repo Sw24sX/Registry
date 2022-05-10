@@ -4,7 +4,7 @@ import com.example.registry.service.persistance.model.UserData;
 
 import java.util.regex.Pattern;
 
-public class UserDataValidator {
+public final class UserDataValidator {
     private static final String EMAIL_REGEX = "^(.+)@(\\S+)$";
     private static final String LOGIN_REGEX = "[A-Za-z0-9_-]+";
 

@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
  */
 public abstract class BaseMessagingService implements MessagingService {
     private static final int TIMEOUT_RECEIVE = 8000;
-    private static final Logger log = LoggerFactory.getLogger(BaseMessagingService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseMessagingService.class);
 
     private final JmsTemplate jmsTemplate;
     private final Connection connection;
@@ -99,7 +99,7 @@ public abstract class BaseMessagingService implements MessagingService {
 
     @SneakyThrows
     private static void sleep() {
-        log.info("Messaging service sleep by 60 sec");
+        LOG.info("Messaging service sleep by 60 sec");
         Thread.sleep(TimeUnit.MINUTES.toMillis(1));
     }
 

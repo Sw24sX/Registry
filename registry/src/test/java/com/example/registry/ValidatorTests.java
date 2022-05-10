@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest
-public class ValidatorTests {
+class ValidatorTests {
     @Test
     public void testValidUser() {
         UserData userData = UserDataSet.createValid();

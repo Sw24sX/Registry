@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
-public class MessagingTests {
+class MessagingTests {
     @MockBean
     private UserDataService userDataService;
 
