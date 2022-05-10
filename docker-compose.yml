@@ -1,5 +1,23 @@
-rabbitmq:
-  image: rabbitmq:management
-  ports:
-    - "5672:5672"
-    - "15672:15672"
+version: '2.3'
+networks:
+  bridge:
+    driver: bridge
+services:
+
+  activemq:
+    image: webcenter/activemq:5.14.3
+    restart: "no"
+    mem_limit: 512m
+    networks:
+    - bridge
+    environment:
+      TZ: "Asia/Shanghai"
+      TIME_ZONE: "Asia/Shanghai"
+      ACTIVEMQ_ADMIN_LOGIN: "admin"
+      ACTIVEMQ_ADMIN_PASSWORD: "admin"
+      ACTIVEMQ_CONFIG_MINMEMORY: "512"
+      ACTIVEMQ_CONFIG_MAXMEMORY: "512"
+    ports: 
+    - "8161:8161"
+    - "61616:61616"
+    - "61613:61613"
