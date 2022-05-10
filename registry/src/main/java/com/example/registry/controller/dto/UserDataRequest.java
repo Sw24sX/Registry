@@ -1,4 +1,4 @@
-package com.example.registry.dto;
+package com.example.registry.controller.dto;
 
 import lombok.Data;
 

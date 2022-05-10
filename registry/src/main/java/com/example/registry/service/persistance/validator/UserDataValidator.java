@@ -1,6 +1,6 @@
 package com.example.registry.service.persistance.validator;
 
-import com.example.registry.model.UserData;
+import com.example.registry.service.persistance.model.UserData;
 
 import java.util.regex.Pattern;
 

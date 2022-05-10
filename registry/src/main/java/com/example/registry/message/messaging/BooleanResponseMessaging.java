@@ -11,9 +11,12 @@ import org.springframework.stereotype.Component;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
+/**
+ * Сервис для отправки сообщений с возвращаемым сообщением типа boolean
+ */
 @Component
 @Qualifier("booleanResponse")
-public class BooleanResponseMessaging extends CommonMessagingService {
+public class BooleanResponseMessaging extends BaseMessagingService {
     private final ObjectMapper objectMapper;
 
     public BooleanResponseMessaging(JmsTemplate jmsTemplate, ConnectionFactory connectionFactory,

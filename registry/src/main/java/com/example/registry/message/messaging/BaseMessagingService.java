@@ -1,6 +1,6 @@
 package com.example.registry.message.messaging;
 
-import com.example.registry.model.MessageState;
+import com.example.registry.service.persistance.model.MessageState;
 import com.example.registry.service.persistance.repository.MessageStateRepository;
 import com.example.registry.message.dto.Message;
 import com.example.registry.message.dto.MessageId;
@@ -17,22 +17,25 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CommonMessagingService implements MessagingService {
+/**
+ * Базовый сервис отправки сообщений.
+ * Реализует подключение, отправку и ожидание сообщения.
+ */
+public abstract class BaseMessagingService implements MessagingService {
     private static final int TIMEOUT_RECEIVE = 7000;
-    private static final Logger log = LoggerFactory.getLogger(CommonMessagingService.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseMessagingService.class);
 
     private final JmsTemplate jmsTemplate;
     private final Connection connection;
     private final MessageStateRepository messageStateRepository;
 
-    public CommonMessagingService(JmsTemplate jmsTemplate, ConnectionFactory connectionFactory,
-                                  MessageStateRepository messageStateRepository) throws JMSException {
+    public BaseMessagingService(JmsTemplate jmsTemplate, ConnectionFactory connectionFactory,
+                                MessageStateRepository messageStateRepository) throws JMSException {
         this.jmsTemplate = jmsTemplate;
         this.connection = connectionFactory.createConnection();
         this.messageStateRepository = messageStateRepository;
         this.connection.start();
     }
-
 
     @Override
     public <T> MessageId send(Message<T> msg) throws JMSException {

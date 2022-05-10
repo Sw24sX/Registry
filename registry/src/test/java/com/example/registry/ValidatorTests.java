@@ -1,7 +1,7 @@
 package com.example.registry;
 
 import com.example.registry.common.UserDataSet;
-import com.example.registry.model.UserData;
+import com.example.registry.service.persistance.model.UserData;
 import com.example.registry.service.persistance.validator.UserDataValidator;
 
 import org.junit.jupiter.api.Test;

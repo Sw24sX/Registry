@@ -1,4 +1,4 @@
-package com.example.registry.model;
+package com.example.registry.service.persistance.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

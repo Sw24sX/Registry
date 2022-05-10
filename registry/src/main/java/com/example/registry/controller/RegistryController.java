@@ -1,6 +1,6 @@
 package com.example.registry.controller;
 
-import com.example.registry.dto.UserDataRequest;
+import com.example.registry.controller.dto.UserDataRequest;
 import com.example.registry.service.RegistryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.bind.annotation.PostMapping;

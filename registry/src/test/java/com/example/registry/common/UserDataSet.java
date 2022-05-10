@@ -1,6 +1,6 @@
 package com.example.registry.common;
 
-import com.example.registry.model.UserData;
+import com.example.registry.service.persistance.model.UserData;
 
 public class UserDataSet {
     private UserDataSet() {
