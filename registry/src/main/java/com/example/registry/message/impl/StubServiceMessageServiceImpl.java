@@ -19,7 +19,6 @@ public class StubServiceMessageServiceImpl implements StubServiceMessagingServic
         this.booleanResponseMessaging = booleanResponseMessaging;
     }
 
-
     @Override
     public Boolean registryUser(UserDataMessage userData) {
         Message<UserDataMessage> message = new Message<>(userData, "stub-service");

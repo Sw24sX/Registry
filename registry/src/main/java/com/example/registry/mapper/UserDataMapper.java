@@ -12,8 +12,6 @@ public interface UserDataMapper {
     @Mapping(target = "id", ignore = true)
     UserData toUserData(UserDataRequest request);
 
-    UserData toUserData(UserDataMessage message);
-
     UserDataMessage toMessage(UserData userData);
 
     UserDataRequest toRequest(UserData userData);
