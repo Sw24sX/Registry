@@ -17,9 +17,9 @@ import javax.jms.JMSException;
 public class BooleanResponseMessaging extends CommonMessagingService {
     private final ObjectMapper objectMapper;
 
-    public BooleanResponseMessaging(JmsTemplate jmsTemplate, Destination addDestination, ConnectionFactory connectionFactory,
+    public BooleanResponseMessaging(JmsTemplate jmsTemplate, ConnectionFactory connectionFactory,
                                     MessageStateRepository messageStateRepository, ObjectMapper objectMapper) throws JMSException {
-        super(jmsTemplate, addDestination, connectionFactory, messageStateRepository);
+        super(jmsTemplate, connectionFactory, messageStateRepository);
         this.objectMapper = objectMapper;
     }
 

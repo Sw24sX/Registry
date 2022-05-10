@@ -31,7 +31,7 @@ public class StubService {
         connection.start();
     }
 
-    @JmsListener(destination = "add-user-queue")
+    @JmsListener(destination = "stub-service")
     public void registryConsumer(Message message) throws JsonProcessingException, JMSException {
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 

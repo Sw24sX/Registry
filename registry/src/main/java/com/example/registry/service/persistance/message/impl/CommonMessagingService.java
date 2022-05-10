@@ -7,6 +7,7 @@ import com.example.registry.service.persistance.exception.RegistryException;
 import com.example.registry.service.persistance.message.dto.Message;
 import com.example.registry.service.persistance.message.dto.MessageId;
 import lombok.SneakyThrows;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -22,14 +23,12 @@ public abstract class CommonMessagingService implements MessagingService {
     private static final Logger log = LoggerFactory.getLogger(CommonMessagingService.class);
 
     private final JmsTemplate jmsTemplate;
-    private final Destination addDestination;
     private final Connection connection;
     private final MessageStateRepository messageStateRepository;
 
-    public CommonMessagingService(JmsTemplate jmsTemplate, Destination addDestination, ConnectionFactory connectionFactory,
+    public CommonMessagingService(JmsTemplate jmsTemplate, ConnectionFactory connectionFactory,
                                   MessageStateRepository messageStateRepository) throws JMSException {
         this.jmsTemplate = jmsTemplate;
-        this.addDestination = addDestination;
         this.connection = connectionFactory.createConnection();
         this.messageStateRepository = messageStateRepository;
         this.connection.start();
@@ -41,7 +40,7 @@ public abstract class CommonMessagingService implements MessagingService {
         String messageBody = convertRequest(msg.getBody());
         Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
-        Destination replyDestination = session.createQueue("test");
+        Destination replyDestination = session.createQueue(msg.getQueueName() + "reply");
 
         javax.jms.Message message = session.createTextMessage();
         message.setStringProperty("userObject", messageBody);
@@ -49,7 +48,8 @@ public abstract class CommonMessagingService implements MessagingService {
         String correlationId = UUID.randomUUID().toString();
         message.setJMSCorrelationID(correlationId);
 
-        jmsTemplate.convertAndSend(addDestination, message);
+        Destination destination = new ActiveMQQueue(msg.getQueueName());
+        jmsTemplate.convertAndSend(destination, message);
 
         session.close();
         MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getQueueName(),
@@ -103,7 +103,7 @@ public abstract class CommonMessagingService implements MessagingService {
 
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination replyDestination = session.createQueue("test");
+        Destination replyDestination = session.createQueue(state.getQueueName() + "reply");
 
         MessageConsumer consumer = session.createConsumer(replyDestination, "JMSCorrelationID = '" + state.getCorrelationId() + "'");
         TextMessage reply = (TextMessage)consumer.receive();

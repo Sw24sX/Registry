@@ -21,10 +21,10 @@ public class RegistryConfig {
     @Value("${activemq.password}")
     private String password;
 
-    @Bean
-    public Destination addDestination() {
-        return new ActiveMQQueue("add-user-queue");
-    }
+//    @Bean
+//    public Destination addDestination() {
+//        return new ActiveMQQueue("add-user-queue");
+//    }
 
     @Bean
     public ConnectionFactory connectionFactory() {

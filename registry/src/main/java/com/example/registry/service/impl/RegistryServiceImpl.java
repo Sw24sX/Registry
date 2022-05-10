@@ -35,7 +35,7 @@ public class RegistryServiceImpl implements RegistryService {
     public UserDataRequest registry(UserDataRequest userDataRequest) {
         UserData userData = userDataService.create(userDataMapper.toUserData(userDataRequest));
         try {
-            Message<UserData> message = new Message<>(userData, "registry", "userData");
+            Message<UserData> message = new Message<>(userData, "stub-service", "userData");
             Message<Boolean> responseMessage = booleanResponseMessaging.doRequest(message);
             userData.setApproval(responseMessage.getBody());
             userDataService.flush();
