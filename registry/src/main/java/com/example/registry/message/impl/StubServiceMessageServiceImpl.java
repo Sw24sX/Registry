@@ -27,7 +27,7 @@ public class StubServiceMessageServiceImpl implements StubServiceMessagingServic
             Message<Boolean> responseMessage = booleanResponseMessaging.doRequest(message);
             return responseMessage.getBody();
         } catch (TimeoutException | JMSException e) {
-            throw new RegistryException(e.getMessage(), e.getCause());
+            throw new RegistryException(e);
         }
     }
 }

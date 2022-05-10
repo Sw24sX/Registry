@@ -54,7 +54,7 @@ public class SendMailerImpl implements SendMailer {
         try {
             mailSender.send(messagePreparator);
         } catch (MailException e) {
-            throw new RegistryException(e.getMessage(), e.getCause());
+            throw new RegistryException(e);
         }
 
         log.info("Message sent to {}, body {}.", toAddress.getRecipientAddress(), content);

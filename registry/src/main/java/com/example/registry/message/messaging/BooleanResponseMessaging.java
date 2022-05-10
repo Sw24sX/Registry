@@ -27,7 +27,7 @@ public class BooleanResponseMessaging extends CommonMessagingService {
         try {
             return objectMapper.writeValueAsString(requestBody);
         } catch (JsonProcessingException e) {
-            throw new RegistryException(e.getMessage(), e.getCause());
+            throw new RegistryException(e);
         }
     }
 
@@ -36,7 +36,7 @@ public class BooleanResponseMessaging extends CommonMessagingService {
         try {
             return (T) objectMapper.readValue(message, Boolean.class);
         } catch (JsonProcessingException e) {
-            throw new RegistryException(e.getMessage(), e.getCause());
+            throw new RegistryException(e);
         }
     }
 }

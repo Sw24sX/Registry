@@ -34,7 +34,6 @@ public class RegistryServiceImpl implements RegistryService {
         UserData userData = userDataService.create(userDataMapper.toUserData(userDataRequest));
         userData.setApproval(stubServiceMessagingService.registryUser(userDataMapper.toMessage(userData)));
         userDataService.flush();
-        userData.setApproval(userData.isApproval());
         sendMail(userData);
         return userDataMapper.toRequest(userData);
     }
@@ -48,7 +47,7 @@ public class RegistryServiceImpl implements RegistryService {
                 sendMailer.sendMail(emailAddress, new RegistryEmailContent("Wrong"));
             }
         } catch (TimeoutException e) {
-            throw new RegistryException(e.getMessage(), e.getCause());
+            throw new RegistryException(e);
         }
     }
 }
