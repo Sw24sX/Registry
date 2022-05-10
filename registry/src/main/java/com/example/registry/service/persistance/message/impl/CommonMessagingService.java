@@ -40,10 +40,10 @@ public abstract class CommonMessagingService implements MessagingService {
         String messageBody = convertRequest(msg.getBody());
         Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
-        Destination replyDestination = session.createQueue(msg.getQueueName() + "reply");
+        Destination replyDestination = session.createQueue(getReplyDestination(msg.getQueueName()));
 
-        javax.jms.Message message = session.createTextMessage();
-        message.setStringProperty("userObject", messageBody);
+        TextMessage message = session.createTextMessage();
+        message.setStringProperty(msg.getPropertyBodyName(), messageBody);
         message.setJMSReplyTo(replyDestination);
         String correlationId = UUID.randomUUID().toString();
         message.setJMSCorrelationID(correlationId);
@@ -55,35 +55,6 @@ public abstract class CommonMessagingService implements MessagingService {
         MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getQueueName(),
         msg.getPropertyBodyName()));
         return new MessageId(messageState.getId());
-
-
-//        Session session = null;
-//        try {
-//            session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
-////            Destination replyDestination = session.createQueue(msg.getQueueName());
-//            Destination replyDestination = session.createQueue("test");
-//
-//            javax.jms.Message message = session.createMessage();
-//            String messageBody = convertRequest(msg.getBody());
-//            message.setStringProperty(msg.getPropertyBodyName(), messageBody);
-//            message.setJMSReplyTo(replyDestination);
-//
-//            String correlationId = UUID.randomUUID().toString();
-//            message.setJMSCorrelationID(correlationId);
-//
-//            jmsTemplate.convertAndSend(destination, message);
-//            log.info("Message was send");
-//            MessageState messageState = messageStateRepository.save(new MessageState(correlationId, msg.getQueueName(),
-//                    msg.getPropertyBodyName()));
-//            return new MessageId(messageState.getId());
-//        } catch (JMSException e) {
-//            throw new RegistryException(e.getMessage(), e.getCause());
-//        } finally {
-//            //todo
-//            if (session != null) {
-//                session.close();
-//            }
-//        }
     }
 
     @Override
@@ -103,25 +74,18 @@ public abstract class CommonMessagingService implements MessagingService {
 
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination replyDestination = session.createQueue(state.getQueueName() + "reply");
+        Destination replyDestination = session.createQueue(getReplyDestination(state.getQueueName()));
 
         MessageConsumer consumer = session.createConsumer(replyDestination, "JMSCorrelationID = '" + state.getCorrelationId() + "'");
         TextMessage reply = (TextMessage)consumer.receive();
-        String userResponce = reply.getText();
 
         consumer.close();
         session.close();
         return new Message<>(convertResponse(reply.getText()), state.getQueueName(), state.getPropertyBodyName());
+    }
 
-//        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-//        Destination replyDestination = session.createQueue(state.getQueueName());
-//        MessageConsumer consumer = session.createConsumer(replyDestination, "JMSCorrelationID = '" + state.getCorrelationId() + "'");
-//        TextMessage reply = (TextMessage) consumer.receive();
-//
-//        consumer.close();
-//        session.close();
-//
-//        return new Message<>(convertResponse(reply.getText()), state.getQueueName(), state.getPropertyBodyName());
+    private String getReplyDestination(String requestDestination) {
+        return String.format("%s.reply", requestDestination);
     }
 
     @Override
