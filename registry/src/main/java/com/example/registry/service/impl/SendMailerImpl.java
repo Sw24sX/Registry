@@ -1,8 +1,8 @@
 package com.example.registry.service.impl;
 
 import com.example.registry.service.SendMailer;
-import com.example.registry.service.persistance.dto.EmailAddress;
-import com.example.registry.service.persistance.dto.EmailContent;
+import com.example.registry.service.persistance.email.EmailAddress;
+import com.example.registry.service.persistance.email.EmailContent;
 import com.example.registry.service.persistance.exception.RegistryException;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
